@@ -39,6 +39,11 @@
         let authorOccurences1 = d3.rollup(data, v => v.length, d => d.Author);
 
         console.log(authorOccurences);
+        // console.log("map", authorOccurences1);
+
+        // change the data structure to be a dictionary containing author, and array of book titles
+        // ex: dictEx = {author: "george orwell", books: ['book1', 'book2', 'book3'] }
+        // to get the count of book occurences, take length of dictEx.books
 
         // scales and extents
         let authorExtent = d3.extent(authorOccurences, d => d[1]);
@@ -84,7 +89,7 @@
                                             });
         }
         renderOnTick();
-        
+
       }
 
       requestData();
