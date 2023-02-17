@@ -8,4 +8,90 @@
       
     </style>
   </head>
+  <body>
+    <div>
+      <svg id="bubble" width="500" height="500"></svg>
+    </div>
+
+    <script>
+      const bubblePlot = d3.select("svg#bubble");
+      const bubbleHeight = bubblePlot.attr("height");
+      const bubbleWidth = bubblePlot.attr("width");
+      console.log("height", bubbleHeight);
+      // didn't do margins or anything.. will decide if we need later
+
+      // chart area g tag to add stuff into
+      const bubbleChartArea = bubblePlot.append("g");
+                                //  .attr("transform", `translate(${0}, ${0})`);
+
+      const requestData = async function () {
+
+        const data = await d3.csv("data/bestsellers.csv", d3.autoType);
+
+        // log data
+        console.log(data);
+
+        // create data rollup for the counts of each author occurence in the dataset
+        // authorOccurences has a length of 248 (i.e. 248 unique authors found on these lists)
+        let authorOccurences = d3.rollups(data, v => v.length, d => d.Author);
+
+        // the same thing as authorOccurences except it uses a map instead of a 2d array ... idk
+        let authorOccurences1 = d3.rollup(data, v => v.length, d => d.Author);
+
+        console.log(authorOccurences);
+
+        // scales and extents
+        let authorExtent = d3.extent(authorOccurences, d => d[1]);
+        // docs on scale sqrt https://www.d3indepth.com/scales/
+        let radiusScale = d3.scaleSqrt()
+                            .domain(authorExtent)
+                            .range([0,50]); //change this depending on how big we want the circles
+
+        //create simulation for the author bubble plot 
+        let simulation = d3.forceSimulation()
+                           .nodes(authorOccurences)
+                           .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-100))
+                           .force("repulse", d3.forceManyBody().strength(-4))
+                          //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
+                          //  .force("ypos", d3.forceY(bubbleHeight-20).strength(.1))
+                           .force("collision", d3.forceCollide().radius(d => radiusScale(d[1]) + 2))
+                           .on("tick", renderOnTick);
+
+
+
+        function checkIfInBounds(point) {
+          if (point.x < 0) { return point.x = radiusScale(point[1]) * 2; }
+          if (point.x > 500) { return point.x = 500 - radiusScale(point[1]) * 2; } 
+          if (point.y < 0) { return point.y = radiusScale(point[1]) * 2; } 
+          if (point.y > 500) { return point.y = 500 - radiusScale(point[1]) * 2; } 
+        }                  
+
+        //put bubbles into a function 
+        function renderOnTick() {
+          // joining data to create the bubble plot 
+          let authorBubbles = bubbleChartArea.selectAll("circle.bubble")
+                                            .data(authorOccurences)
+                                            .join(enter => 
+                                                enter.append("circle")
+                                                .attr("class", "bubble")
+                                                .attr("cx", 0)
+                                                .attr("cy", 0) //start sim at bottom?
+                                                .attr("r", d => radiusScale(d[1]))
+                                                .style("fill", "lightpink"))
+                                            .attr("transform", function (d) { 
+                                              checkIfInBounds(d);
+                                              return `translate(${d.x},${d.y})`;
+                                            });
+        }
+        renderOnTick();
+        
+      }
+
+      requestData();
+
+
+
+
+    </script>
+  </body>
 </html>
