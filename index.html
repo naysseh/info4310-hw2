@@ -4,20 +4,20 @@
     <title>HW 2</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-force-boundary@0.0.1/dist/d3-force-boundary.min.js"></script>
-    <!-- <script src="https://raw.githubusercontent.com/sohamkamani/d3-force-gravity/master/d3-force-gravity.min.js" charset="utf-8"></script> -->
-    <!-- <script src="https://unpkg.com/d3-force-attract@latest"></script> -->
-
-
-
-
-    <style>
-      
-    </style>
+    <link rel="stylesheet" type="text/css" href="styles/site.css">
   </head>
   <body>
     <div>
-      <svg id="bubble" width="600" height="500"></svg>
+      <div class="main-view">
+        <svg id="bubble" width="600" height="500"></svg>
+        <div class="right-side">
+          <div class="filters">filters go around here? change this if it's wrong just putting a placeholder</div>
+
+          <div class="modal">detailed info area</div>
+        </div>
+      </div>
     </div>
+
 
     <script>
       const bubblePlot = d3.select("svg#bubble");
@@ -28,7 +28,6 @@
 
       // chart area g tag to add stuff into
       const bubbleChartArea = bubblePlot.append("g");
-                                //  .attr("transform", `translate(${0}, ${0})`);
 
       const requestData = async function () {
 
@@ -37,19 +36,31 @@
         // log data
         console.log(data);
 
+        let authors = data.map(d => d.Author);
+        let authorsUnique = Array.from(new Set(authors));
+        let authorsTotal = d3.group(data, d => d.Author); //this is basically a map version of the final data structure we want
+        console.log(authorsUnique);
+
+        console.log("total", authorsTotal);
+
+        console.log("testing", authorsTotal.get("Stephen King"));
+
+        // turning the map into an array of dictionaries
+        // form is: authorData = [{author: "name", books: [{Name: '', Author: '', User Rating: 00, Reviews: 00, Price: 0}, {}, ... ]}]
+        let authorData = [];
+        authorsUnique.forEach(d => {
+          authorData.push({author: d, books: authorsTotal.get(d)});
+        });
+        console.log("data final", authorData);
+
         // create data rollup for the counts of each author occurence in the dataset
         // authorOccurences has a length of 248 (i.e. 248 unique authors found on these lists)
         let authorOccurences = d3.rollups(data, v => v.length, d => d.Author);
-
         // the same thing as authorOccurences except it uses a map instead of a 2d array ... idk
         let authorOccurences1 = d3.rollup(data, v => v.length, d => d.Author);
 
         console.log(authorOccurences);
-        // console.log("map", authorOccurences1);
 
-        // change the data structure to be a dictionary containing author, and array of book titles
-        // ex: dictEx = {author: "george orwell", books: ['book1', 'book2', 'book3'] }
-        // to get the count of book occurences, take length of dictEx.books
 
         // scales and extents
         let authorExtent = d3.extent(authorOccurences, d => d[1]);
@@ -62,7 +73,7 @@
         let simulation = d3.forceSimulation()
                            .nodes(authorOccurences)
                           //  .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-200))
-                           .force("repulse", d3.forceManyBody().strength(-3))
+                           .force("center", d3.forceManyBody().strength(-3))
                            .force("boundary", forceBoundary(0, 0, 600, 480))
                           //  .force('x', d3.forceX(600 / 2).strength(0.5))
                           //  .force('y',  d3.forceY(500 / 2).strength(0.8))
