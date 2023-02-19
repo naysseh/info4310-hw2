@@ -5,22 +5,16 @@
 }
 
 #panel {
-  background-color: lightpink;
-  width: 600px;
+  width: 650px;
   height: 500px;
   margin-top: 20px;
   padding: 100 100 100 100;
 }
 #panel h3 {
   margin:0;
-  padding: 10px 10px 10px 10px
-
-}
-#panel table {
-  padding: 10px 10px 10px 10px
 }
 #panel th, td {
-  padding: 5px 12px;
+  padding: 3px 3px;
   text-align: left;}
 #panel th:first-child,
 #panel td:first-child {

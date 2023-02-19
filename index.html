@@ -94,7 +94,7 @@
             .transition().duration(200)
             .attr("stroke","black")
             .attr("stroke-width", 3)
-            .attr("fill", "cornflowerblue") ;
+            .style("fill", "cornflowerblue" ) ;
 
           updatePanel(d);
         });
@@ -103,6 +103,8 @@
             .transition().duration(200)
             .attr("stroke","")
             .attr("stroke-width", 1)
+            .style("fill", "lightpink") ;
+
         
           updatePanel( {} );
     
