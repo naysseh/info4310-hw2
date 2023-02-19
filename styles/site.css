@@ -3,22 +3,35 @@
   flex-direction: row;
   align-items: center;
 }
-.panelInfo {
-  margin-bottom: 20px;
-}
 
 #panel {
   background-color: lightpink;
-  width: 300px;
-  height: 350px;
+  width: 600px;
+  height: 500px;
   margin-top: 20px;
-  float:left; 
-  padding: 20 30 20 20;
+  padding: 100 100 100 100;
 }
+#panel h3 {
+  margin:0;
+  padding: 10px 10px 10px 10px
+
+}
+#panel table {
+  padding: 10px 10px 10px 10px
+}
+#panel th, td {
+  padding: 5px 12px;
+  text-align: left;}
+#panel th:first-child,
+#panel td:first-child {
+  padding-left: 0; }
+#panel th:last-child,
+#panel td:last-child {
+  padding-right: 0; }
 
 .filters {
   background-color: cornflowerblue;
-  width: 300px;
+  width: 500px;
   height: 100px;
 }
 

@@ -93,7 +93,9 @@
           d3.select(this)
             .transition().duration(200)
             .attr("stroke","black")
-            .attr("stroke-width", 4);
+            .attr("stroke-width", 3)
+            .attr("fill", "cornflowerblue") ;
+
           updatePanel(d);
         });
         bubbles.on("mouseout", function(event, d) {
@@ -106,8 +108,7 @@
     
         });
 
-        let authorName = d3.select("#panel").append("h4");
-        let info = d3.select("#panel").append("div").attr("class", "panelInfo")
+        let authorName = d3.select("#panel").append("h3");
         let table = d3.select("#panel").append("table");
 
         function updatePanel(row) {
@@ -126,29 +127,6 @@
           rows.append("td").text( d => "Published in "+d["Year"] );
           rows.append("td").text( d => "Price: $"+d["Price"] ); 
           rows.append("td").text( d => "User Rating: " + d["User Rating"]  ); 
-          
-                            
-               
-
-          //   if (Object.keys(rowCopy).length>0){
-          // let kvPairs = Object.entries(rowCopy);
-          // let string = ""
-          // rowCopy["books"].forEach (d => {
-          //   console.log(d)
-          //   string += "\n \n"+d["Name"] +": Published in "+d["Year"]+"  Price: $"+d["Price"]+ " User Rating: " + d["User Rating"] 
-          //   info.text(string);
- 
-            // rows.append("td").append("strong").text( d => d["Name"]);
-            // rows.append("td").text( d => "Published in "+d["Year"] );
-            // rows.append("td").text( d => "Price: $"+d["Price"] ); 
-            // rows.append("td").text( d => "User Rating: " + d["User Rating"]  ); 
-
-          // }); 
-          // }
-          // else{
-          //   table
-          //   info.text("");
-          // }
         }
 
 
