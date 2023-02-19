@@ -3,12 +3,17 @@
   flex-direction: row;
   align-items: center;
 }
+.panelInfo {
+  margin-bottom: 20px;
+}
 
-.modal {
+#panel {
   background-color: lightpink;
   width: 300px;
   height: 350px;
   margin-top: 20px;
+  float:left; 
+  padding: 20 30 20 20;
 }
 
 .filters {

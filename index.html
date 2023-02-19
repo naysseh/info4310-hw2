@@ -13,7 +13,7 @@
         <div class="right-side">
           <div class="filters">filters go around here? change this if it's wrong just putting a placeholder</div>
 
-          <div class="modal">detailed info area</div>
+          <div id="panel"></div>
         </div>
       </div>
     </div>
@@ -85,7 +85,72 @@
                                                 .style("fill", "lightpink"))
                                             .attr("transform", d => `translate(${d.x},${d.y})`);
         }
+        
         renderOnTick();
+
+        let bubbles = bubbleChartArea.selectAll("circle.bubble")
+        bubbles.on("mouseover", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("stroke","black")
+            .attr("stroke-width", 4);
+          updatePanel(d);
+        });
+        bubbles.on("mouseout", function(event, d) {
+          d3.select(this)
+            .transition().duration(200)
+            .attr("stroke","")
+            .attr("stroke-width", 1)
+        
+          updatePanel( {} );
+    
+        });
+
+        let authorName = d3.select("#panel").append("h4");
+        let info = d3.select("#panel").append("div").attr("class", "panelInfo")
+        let table = d3.select("#panel").append("table");
+
+        function updatePanel(row) {
+          let rowCopy = Object.assign({},row);
+          console.log(rowCopy) 
+          let author = rowCopy.author;
+          authorName.text(author);
+          delete rowCopy.author;
+          let iterate = rowCopy["books"] != null ? rowCopy["books"] : []
+          let rows = table.selectAll("tr").data(iterate)
+                            .join( enter => enter.append("tr"),
+                                  update => update.selectAll("td").remove(), 
+                                  exit => exit.remove() ); 
+          
+          rows.append("td").append("strong").text( d => d["Name"]);
+          rows.append("td").text( d => "Published in "+d["Year"] );
+          rows.append("td").text( d => "Price: $"+d["Price"] ); 
+          rows.append("td").text( d => "User Rating: " + d["User Rating"]  ); 
+          
+                            
+               
+
+          //   if (Object.keys(rowCopy).length>0){
+          // let kvPairs = Object.entries(rowCopy);
+          // let string = ""
+          // rowCopy["books"].forEach (d => {
+          //   console.log(d)
+          //   string += "\n \n"+d["Name"] +": Published in "+d["Year"]+"  Price: $"+d["Price"]+ " User Rating: " + d["User Rating"] 
+          //   info.text(string);
+ 
+            // rows.append("td").append("strong").text( d => d["Name"]);
+            // rows.append("td").text( d => "Published in "+d["Year"] );
+            // rows.append("td").text( d => "Price: $"+d["Price"] ); 
+            // rows.append("td").text( d => "User Rating: " + d["User Rating"]  ); 
+
+          // }); 
+          // }
+          // else{
+          //   table
+          //   info.text("");
+          // }
+        }
+
 
       }
 
