@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HW 2</title>
+    <title>HW 2 - Amazon Bestsellers</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/d3-force-boundary@0.0.1/dist/d3-force-boundary.min.js"></script>
     <link rel="stylesheet" type="text/css" href="styles/site.css">
   </head>
   <body>
     <div>
+      <div class="title">
+        <h1>Amazon Bestsellers At A Glance</h1>
+      </div>
       <div class="main-view">
         <svg id="bubble" width="600" height="500"></svg>
         <div class="right-side">
@@ -27,7 +30,7 @@
       // didn't do margins or anything.. will decide if we need later
 
       // chart area g tag to add stuff into
-      const bubbleChartArea = bubblePlot.append("g");
+      let bubbleChartArea = bubblePlot.append("g");
 
       const requestData = async function () {
 
@@ -84,6 +87,20 @@
                                                 .attr("r", d => radiusScale(d['books'].length))
                                                 .style("fill", "lightpink"))
                                             .attr("transform", d => `translate(${d.x},${d.y})`);
+          
+
+          bubbleChartArea.selectAll("text.bubble-label")
+                       .data(authorData)
+                       .join("text")    
+                       .attr("class", "bubble-label")
+                       .style("text-anchor", "middle")
+                       .style("text-align", "middle")
+                       .attr("transform", d => `translate(${d.x},${d.y})`)
+                       .style("font-size", "11px")
+                       .text(function (d) {
+                        if (radiusScale(d['books'].length) > 20) {
+                          return d.author;
+                       } else {return ""}});                       
         }
         
         renderOnTick();
