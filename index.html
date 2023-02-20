@@ -56,7 +56,7 @@
         // docs on scale sqrt https://www.d3indepth.com/scales/
         let radiusScale = d3.scaleSqrt()
                             .domain(authorExtent)
-                            .range([0,40]); //change this depending on how big we want the circles
+                            .range([5,40]); //change this depending on how big we want the circles
 
         //create simulation for the author bubble plot 
         let simulation = d3.forceSimulation()
@@ -126,7 +126,7 @@
                                   exit => exit.remove() ); 
           
           rows.append("td").append("strong").text( d => d["Name"]);
-          rows.append("td").text( d => "Published in "+d["Year"] );
+          rows.append("td").text( d => "Placed in "+d["Year"] );
           rows.append("td").text( d => "Price: $"+d["Price"] ); 
           rows.append("td").text( d => "User Rating: " + d["User Rating"]  ); 
         }
