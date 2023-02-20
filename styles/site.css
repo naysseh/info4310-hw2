@@ -62,4 +62,10 @@ h1 {
 
 .bubble-label {
   font-family: 'Trebuchet MS', sans-serif;
+  width: 30px;
 }
+/* 
+text {
+  display: flex;
+  
+} */

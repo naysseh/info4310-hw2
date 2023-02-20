@@ -87,18 +87,19 @@
                                                 .attr("r", d => radiusScale(d['books'].length))
                                                 .style("fill", "lightpink"))
                                             .attr("transform", d => `translate(${d.x},${d.y})`);
-          
-
+                                           
           bubbleChartArea.selectAll("text.bubble-label")
                        .data(authorData)
                        .join("text")    
                        .attr("class", "bubble-label")
                        .style("text-anchor", "middle")
-                       .style("text-align", "middle")
+                       .style("text-align", "center")
+                      //  .style("white-space", "normal")
+                      //  .style("width", "30px")
                        .attr("transform", d => `translate(${d.x},${d.y})`)
-                       .style("font-size", "11px")
+                       .style("font-size", "10px")
                        .text(function (d) {
-                        if (radiusScale(d['books'].length) > 20) {
+                        if (radiusScale(d['books'].length) > 25) {
                           return d.author;
                        } else {return ""}});                       
         }
@@ -109,7 +110,7 @@
         bubbles.on("mouseover", function(event, d) {
           d3.select(this)
             .transition().duration(200)
-            .attr("stroke","black")
+            .attr("stroke", "black")
             .attr("stroke-width", 3)
             .style("fill", "cornflowerblue" ) ;
 
@@ -118,7 +119,7 @@
         bubbles.on("mouseout", function(event, d) {
           d3.select(this)
             .transition().duration(200)
-            .attr("stroke","")
+            .attr("stroke", "")
             .attr("stroke-width", 1)
             .style("fill", "lightpink") ;
 
