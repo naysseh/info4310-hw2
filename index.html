@@ -151,13 +151,12 @@
           // joining data to create the bubble plot 
           let authorBubbles = bubbleChartArea.selectAll("circle.bubble")
             .data(authorData)
-            .join(enter =>
-              enter.append("circle")
-                .attr("class", "bubble bubbles")
-                .attr("cx", 0)
-                .attr("cy", 0) //start sim at bottom?
-                .attr("r", d => radiusScale(d['books'].length))
-                .style("fill", "lightpink"))
+            .join("circle")
+            .attr("class", "bubble bubbles")
+            .attr("cx", 0)
+            .attr("cy", 0) //start sim at bottom?
+            .attr("r", d => radiusScale(d['books'].length))
+            .style("fill", "lightpink")
             .attr("transform", d => `translate(${d.x},${d.y})`);
 
           let bubbleText = bubbleChartArea.selectAll("text.bubble-label")
@@ -196,13 +195,12 @@
 
           let hoverBubbles = bubbleChartArea.selectAll(".zero-bubble")
             .data(authorData)
-            .join(enter =>
-              enter.append("circle")
-                .attr("class", "zero-bubble")
-                .attr("cx", 0)
-                .attr("cy", 0) //start sim at bottom?
-                .attr("r", d => radiusScale(d['books'].length))
-                .style("opacity", 0))
+            .join("circle")
+            .attr("class", "zero-bubble")
+            .attr("cx", 0)
+            .attr("cy", 0) //start sim at bottom?
+            .attr("r", d => radiusScale(d['books'].length))
+            .style("opacity", 0)
             .attr("transform", d => `translate(${d.x},${d.y})`)
             .raise();
         }
