@@ -74,6 +74,39 @@
                            .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 2))
                            .on("tick", renderOnTick);
 
+        function wrap(text, width) {
+          text.each(function () {
+              var text = d3.select(this),
+                  words = text.text().split(/\s+/).reverse(),
+                  word,
+                  line = [],
+                  lineNumber = 0,
+                  lineHeight = 1,
+                  x = text.attr("x"),
+                  y = text.attr("y"),
+                  dy = 0, 
+                  tspan = text.text(null)
+                              .append("tspan")
+                              .attr("x", x)
+                              .attr("y", y)
+                              .attr("dy", dy + "em");
+              while (word = words.pop()) {
+                  line.push(word);
+                  tspan.text(line.join(" "));
+                  if (tspan.node().getComputedTextLength() > width) {
+                      line.pop();
+                      tspan.text(line.join(" "));
+                      line = [word];
+                      tspan = text.append("tspan")
+                                  .attr("x", x)
+                                  .attr("y", y)
+                                  .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                                  .text(word);
+                  }
+              }
+          });
+        
+        }
         //put bubbles into a function 
         function renderOnTick() {
           // joining data to create the bubble plot 
@@ -88,20 +121,22 @@
                                                 .style("fill", "lightpink"))
                                             .attr("transform", d => `translate(${d.x},${d.y})`);
                                            
-          bubbleChartArea.selectAll("text.bubble-label")
+          let bubbleText =bubbleChartArea.selectAll("text.bubble-label")
                        .data(authorData)
                        .join("text")    
                        .attr("class", "bubble-label")
                        .style("text-anchor", "middle")
                        .style("text-align", "center")
-                      //  .style("white-space", "normal")
-                      //  .style("width", "30px")
-                       .attr("transform", d => `translate(${d.x},${d.y})`)
+                       .style("white-space", "normal")
+                       .attr("x", function (d) { return d.x })
+                       .attr("y", function (d) { return d.y-14 })
+                      //  .attr("transform", d => `translate(${d.x},${d.y})`)
                        .style("font-size", "10px")
                        .text(function (d) {
                         if (radiusScale(d['books'].length) > 25) {
                           return d.author;
-                       } else {return ""}});                       
+                       } else {return ""}})
+                       .call(wrap, 14);                       
         }
         
         renderOnTick();
@@ -112,7 +147,7 @@
             .transition().duration(200)
             .attr("stroke", "black")
             .attr("stroke-width", 3)
-            .style("fill", "cornflowerblue" ) ;
+            .style("fill", "#dd6688" ) ;
 
           updatePanel(d);
         });
