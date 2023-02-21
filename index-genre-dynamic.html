@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HW 2 - Amazon Bestsellers</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/d3-force-boundary@0.0.1/dist/d3-force-boundary.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/site.css">
+</head>
+
+<body>
+    <div>
+        <div class="title">
+            <h1>Amazon Bestsellers At A Glance</h1>
+        </div>
+
+        <a href="index.html">Project with Price Slider</a>
+
+        <div class="main-view">
+            <svg id="bubble" width="600" height="500"></svg>
+            <div class="right-side">
+                <div class="genre-class">
+                    <div class="filter">Filter by Genre:</div>
+
+                    <div id="genre-button"></div>
+                </div>
+
+                <div class="filters">filters go around here? change this if it's wrong just putting a placeholder</div>
+
+                <div id="panel"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const bubblePlot = d3.select("svg#bubble");
+        const bubbleHeight = bubblePlot.attr("height");
+        const bubbleWidth = bubblePlot.attr("width");
+        console.log("height", bubbleHeight);
+        // didn't do margins or anything.. will decide if we need later
+
+        // chart area g tag to add stuff into
+        let bubbleChartArea = bubblePlot.append("g");
+
+        const requestData = async function () {
+
+            const data = await d3.csv("data/bestsellers.csv", d3.autoType);
+
+            // log data
+            console.log(data);
+
+            // let authors = data.map(d => d.Author);
+            // let authorsUnique = Array.from(new Set(authors));
+            // let authorsTotal = d3.group(data, d => d.Author); //this is basically a map version of the final data structure we want
+
+            // // turning the map into an array of dictionaries
+            // // form is: authorData = [{author: "name", books: [{Name: '', Author: '', User Rating: 00, Reviews: 00, Price: 0}, {}, ... ]}]
+            // let authorData = [];
+            // authorsUnique.forEach(d => {
+            //   authorData.push({ author: d, books: authorsTotal.get(d) });
+            // });
+            // console.log("data final structure", authorData);
+
+            // // create data rollup for the counts of each author occurence in the dataset
+            // // authorOccurences has a length of 248 (i.e. 248 unique authors found on these lists)
+            // // let authorOccurences = d3.rollups(data, v => v.length, d => d.Author);
+
+            // let authorExtent = d3.extent(authorData, d => d['books'].length);
+            // // docs on scale sqrt https://www.d3indepth.com/scales/
+            // let radiusScale = d3.scaleSqrt()
+            //   .domain(authorExtent)
+            //   .range([5, 40]); //change this depending on how big we want the circles
+
+            // //create simulation for the author bubble plot 
+            // let simulation = d3.forceSimulation()
+            //   .nodes(authorData)
+            //   //  .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-200))
+            //   .force("center", d3.forceManyBody().strength(-3))
+            //   .force("boundary", forceBoundary(0, 0, 600, 480))
+            //   //  .force('x', d3.forceX(600 / 2).strength(0.5))
+            //   //  .force('y',  d3.forceY(500 / 2).strength(0.8))
+            //   //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
+            //   //  .force("ypos", d3.forceY(bubbleHeight-20).strength(.1))
+            //   .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 2))
+            //   .on("tick", renderOnTick);
+
+            function wrap(text, width) {
+                text.each(function () {
+                    var text = d3.select(this),
+                        words = text.text().split(/\s+/).reverse(),
+                        word,
+                        line = [],
+                        lineNumber = 0,
+                        lineHeight = 1,
+                        x = text.attr("x"),
+                        y = text.attr("y"),
+                        dy = 0,
+                        tspan = text.text(null)
+                            .append("tspan")
+                            .attr("x", x)
+                            .attr("y", y)
+                            .attr("dy", dy + "em");
+                    while (word = words.pop()) {
+                        line.push(word);
+                        tspan.text(line.join(" "));
+                        if (tspan.node().getComputedTextLength() > width) {
+                            line.pop();
+                            tspan.text(line.join(" "));
+                            line = [word];
+                            tspan = text.append("tspan")
+                                .attr("x", x)
+                                .attr("y", y)
+                                .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                                .text(word);
+                        }
+                    }
+                });
+
+            }
+
+            function updateData(genre) {
+                let genreCurrent = [];
+
+                data.forEach((d, i) => {
+                    if (genre === 'All') {
+                        genreCurrent.push(d);
+                    }
+                    else if (d.Genre === genre) {
+                        genreCurrent.push(d);
+                    }
+                });
+
+                let authors = genreCurrent.map(d => d.Author);
+                let authorsUnique = Array.from(new Set(authors));
+                let authorsTotal = d3.group(genreCurrent, d => d.Author); //this is basically a map version of the final data structure we want
+
+                // turning the map into an array of dictionaries
+                // form is: authorData = [{author: "name", books: [{Name: '', Author: '', User Rating: 00, Reviews: 00, Price: 0}, {}, ... ]}]
+                let authorData = [];
+                authorsUnique.forEach(d => {
+                    authorData.push({ author: d, books: authorsTotal.get(d) });
+                });
+                console.log("data final structure", authorData);
+
+                // create data rollup for the counts of each author occurence in the dataset
+                // authorOccurences has a length of 248 (i.e. 248 unique authors found on these lists)
+                // let authorOccurences = d3.rollups(data, v => v.length, d => d.Author);
+
+                let authorExtent = d3.extent(authorData, d => d['books'].length);
+                // docs on scale sqrt https://www.d3indepth.com/scales/
+                let radiusScale = d3.scaleSqrt()
+                    .domain(authorExtent)
+                    .range([5, 40]); //change this depending on how big we want the circles
+
+                //create simulation for the author bubble plot 
+                let simulation = d3.forceSimulation()
+                    .nodes(authorData)
+                    //  .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-200))
+                    .force("center", d3.forceManyBody().strength(-3))
+                    .force("boundary", forceBoundary(0, 0, 600, 480))
+                    //  .force('x', d3.forceX(600 / 2).strength(0.5))
+                    //  .force('y',  d3.forceY(500 / 2).strength(0.8))
+                    //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
+                    //  .force("ypos", d3.forceY(bubbleHeight-20).strength(.1))
+                    .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 2))
+                    .on("tick", renderOnTick);
+
+                //put bubbles into a function 
+                function renderOnTick() {
+                    // joining data to create the bubble plot 
+                    let authorBubbles = bubbleChartArea.selectAll("circle.bubble")
+                        .data(authorData)
+                        .join(enter =>
+                            enter.append("circle")
+                                .attr("class", "bubble bubbles")
+                                .attr("cx", 0)
+                                .attr("cy", 0) //start sim at bottom?
+                                .attr("r", d => radiusScale(d['books'].length))
+                                .style("fill", "lightpink"))
+                        .attr("transform", d => `translate(${d.x},${d.y})`);
+
+                    let bubbleText = bubbleChartArea.selectAll("text.bubble-label")
+                        .data(authorData)
+                        .join("text")
+                        .attr("class", "bubble-label")
+                        .style("text-anchor", "middle")
+                        .style("text-align", "center")
+                        .style("white-space", "normal")
+                        .attr("x", function (d) { return d.x })
+                        .attr("y", function (d) { return d.y - 14 })
+                        //  .attr("transform", d => `translate(${d.x},${d.y})`)
+                        .style("font-size", "10px")
+                        .text(function (d) {
+                            if (radiusScale(d['books'].length) > 25) {
+                                return d.author;
+                            } else if (radiusScale(d['books'].length) > 18) {
+                                var author_split = d.author.split(" ")
+                                var last_name = author_split[author_split.length - 1]
+                                if (last_name.length > 8 || last_name == "Gladwell" || last_name == "Campbell" || last_name == "Stockett")
+                                    return ""
+                                else
+                                    return author_split[author_split.length - 1]
+                            }
+                            else if (radiusScale(d['books'].length) > 12) {
+                                var author_split = d.author.split(" ")
+                                var last_name = author_split[author_split.length - 1]
+                                if (last_name.length >= 5)
+                                    return ""
+                                else
+                                    return author_split[author_split.length - 1]
+                            }
+                            else { return "" }
+                        })
+                        .call(wrap, 14);
+
+                    let hoverBubbles = bubbleChartArea.selectAll(".zero-bubble")
+                        .data(authorData)
+                        .join(enter =>
+                            enter.append("circle")
+                                .attr("class", "zero-bubble")
+                                .attr("cx", 0)
+                                .attr("cy", 0) //start sim at bottom?
+                                .attr("r", d => radiusScale(d['books'].length))
+                                .style("opacity", 0))
+                        .attr("transform", d => `translate(${d.x},${d.y})`)
+                        .raise();
+                }
+
+                renderOnTick();
+
+
+                let bubbles = bubbleChartArea.selectAll(".zero-bubble")
+                bubbles.on("mouseover", function (event, d) {
+                    d3.select(this)
+                        .style("opacity", 0.15)
+                        .transition().duration(200);
+                    updatePanel(d);
+                });
+                bubbles.on("mouseout", function (event, d) {
+                    d3.select(this)
+                        .transition().duration(200)
+                        .style("opacity", 0);
+                    updatePanel({});
+                });
+
+                let authorName = d3.select("#panel").append("h3");
+                let table = d3.select("#panel").append("table");
+
+                function updatePanel(row) {
+                    let rowCopy = Object.assign({}, row);
+                    console.log(rowCopy)
+                    let author = rowCopy.author;
+                    authorName.text(author);
+                    delete rowCopy.author;
+                    let iterate = rowCopy["books"] != null ? rowCopy["books"] : []
+                    let rows = table.selectAll("tr").data(iterate)
+                        .join(enter => enter.append("tr"),
+                            update => update.selectAll("td").remove(),
+                            exit => exit.remove());
+
+                    rows.append("td").append("strong").text(d => d["Name"]);
+                    rows.append("td").text(d => "Placed in " + d["Year"]);
+                    rows.append("td").text(d => "Price: $" + d["Price"]);
+                    rows.append("td").text(d => "User Rating: " + d["User Rating"]);
+                }
+
+            }
+
+            let genres = ['All', 'Fiction', 'Non Fiction'];
+
+            genres.forEach(d => {
+                d3.select("div#genre-button")
+                    .append("button")
+                    .text(d)
+                    .attr("class", "genre-buttons")
+                    .attr("id", d)
+                    .on("click", function () {
+                        clicked = document.getElementsByClassName("genre-clicked");
+                        clicked[0].classList.remove("genre-clicked");
+                        event.target.classList.add("genre-clicked");
+
+                        updateData(d);
+                    });
+
+                if (d == 'All') {
+                    d3.selectAll('.genre-buttons')
+                        .attr("class", "genre-buttons genre-clicked")
+                        .style("border-left", "2px solid gray")
+                }
+            });
+
+            updateData('All');
+
+
+
+            // //put bubbles into a function 
+            // function renderOnTick() {
+            //   // joining data to create the bubble plot 
+            //   let authorBubbles = bubbleChartArea.selectAll("circle.bubble")
+            //     .data(authorData)
+            //     .join(enter =>
+            //       enter.append("circle")
+            //         .attr("class", "bubble bubbles")
+            //         .attr("cx", 0)
+            //         .attr("cy", 0) //start sim at bottom?
+            //         .attr("r", d => radiusScale(d['books'].length))
+            //         .style("fill", "lightpink"))
+            //     .attr("transform", d => `translate(${d.x},${d.y})`);
+
+            //   let bubbleText = bubbleChartArea.selectAll("text.bubble-label")
+            //     .data(authorData)
+            //     .join("text")
+            //     .attr("class", "bubble-label")
+            //     .style("text-anchor", "middle")
+            //     .style("text-align", "center")
+            //     .style("white-space", "normal")
+            //     .attr("x", function (d) { return d.x })
+            //     .attr("y", function (d) { return d.y - 14 })
+            //     //  .attr("transform", d => `translate(${d.x},${d.y})`)
+            //     .style("font-size", "10px")
+            //     .text(function (d) {
+            //       if (radiusScale(d['books'].length) > 25) {
+            //         return d.author;
+            //       } else if (radiusScale(d['books'].length) > 18) {
+            //         var author_split = d.author.split(" ")
+            //         var last_name = author_split[author_split.length - 1]
+            //         if (last_name.length > 8 || last_name == "Gladwell" || last_name == "Campbell" || last_name == "Stockett")
+            //           return ""
+            //         else
+            //           return author_split[author_split.length - 1]
+            //       }
+            //       else if (radiusScale(d['books'].length) > 12) {
+            //         var author_split = d.author.split(" ")
+            //         var last_name = author_split[author_split.length - 1]
+            //         if (last_name.length >= 5)
+            //           return ""
+            //         else
+            //           return author_split[author_split.length - 1]
+            //       }
+            //       else { return "" }
+            //     })
+            //     .call(wrap, 14);
+
+            //   let hoverBubbles = bubbleChartArea.selectAll(".zero-bubble")
+            //     .data(authorData)
+            //     .join(enter =>
+            //       enter.append("circle")
+            //         .attr("class", "zero-bubble")
+            //         .attr("cx", 0)
+            //         .attr("cy", 0) //start sim at bottom?
+            //         .attr("r", d => radiusScale(d['books'].length))
+            //         .style("opacity", 0))
+            //     .attr("transform", d => `translate(${d.x},${d.y})`)
+            //     .raise();
+            // }
+
+            // renderOnTick();
+
+
+            // let bubbles = bubbleChartArea.selectAll(".zero-bubble")
+            // bubbles.on("mouseover", function (event, d) {
+            //   d3.select(this)
+            //     .style("opacity", 0.15)
+            //     .transition().duration(200);
+            //   updatePanel(d);
+            // });
+            // bubbles.on("mouseout", function (event, d) {
+            //   d3.select(this)
+            //     .transition().duration(200)
+            //     .style("opacity", 0);
+            //   updatePanel({});
+            // });
+
+            // let authorName = d3.select("#panel").append("h3");
+            // let table = d3.select("#panel").append("table");
+
+            // function updatePanel(row) {
+            //   let rowCopy = Object.assign({}, row);
+            //   console.log(rowCopy)
+            //   let author = rowCopy.author;
+            //   authorName.text(author);
+            //   delete rowCopy.author;
+            //   let iterate = rowCopy["books"] != null ? rowCopy["books"] : []
+            //   let rows = table.selectAll("tr").data(iterate)
+            //     .join(enter => enter.append("tr"),
+            //       update => update.selectAll("td").remove(),
+            //       exit => exit.remove());
+
+            //   rows.append("td").append("strong").text(d => d["Name"]);
+            //   rows.append("td").text(d => "Placed in " + d["Year"]);
+            //   rows.append("td").text(d => "Price: $" + d["Price"]);
+            //   rows.append("td").text(d => "User Rating: " + d["User Rating"]);
+            // }
+
+
+        }
+
+        requestData();
+
+
+
+
+    </script>
+</body>
+
+</html>
