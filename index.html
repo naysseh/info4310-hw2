@@ -146,7 +146,7 @@
           //  .force('y',  d3.forceY(500 / 2).strength(0.8))
           //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
           //  .force("ypos", d3.forceY(bubbleHeight-20).strength(.1))
-          .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 2))
+          .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 4))
           .on("tick", renderOnTick);
 
         //put bubbles into a function 
