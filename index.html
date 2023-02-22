@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>HW 2 - Amazon Bestsellers</title>
+  <title>Amazon Bestsellers - HW 2</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script src="https://unpkg.com/d3-force-boundary@0.0.1/dist/d3-force-boundary.min.js"></script>
   <link rel="stylesheet" type="text/css" href="styles/site.css">
@@ -44,7 +44,6 @@
     const bubbleHeight = bubblePlot.attr("height");
     const bubbleWidth = bubblePlot.attr("width");
     console.log("height", bubbleHeight);
-    // didn't do margins or anything.. will decide if we need later
 
     // chart area g tag to add stuff into
     let bubbleChartArea = bubblePlot.append("g");
@@ -52,11 +51,7 @@
     const requestData = async function () {
 
       const data = await d3.csv("data/bestsellers.csv", d3.autoType);
-
-      // log data
       console.log(data);
-
-
 
       var filters = {};
 
@@ -78,7 +73,10 @@
         return stillPassed;
 
       }
-      /// EXTERNAL FUNCTION BEGINS            from ----> https://stackoverflow.com/questions/24784302/wrapping-text-in-d3https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+
+      // ******** EXTERNAL FUNCTION BEGINS ********
+      // Credit to @mdmdl on StackOverflow
+      // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
       function wrap(text, width) {
         text.each(function () {
           var text = d3.select(this),
@@ -112,14 +110,14 @@
         });
 
       }
-      /// EXTERNAL FUNCTION ENDS   
+      // ******** EXTERNAL FUNCTION ENDS ******** 
 
       function updateData(data) {
         data = data.filter(d => pointPassesFilters(d));
 
         let authors = data.map(d => d.Author);
         let authorsUnique = Array.from(new Set(authors));
-        let authorsTotal = d3.group(data, d => d.Author); //this is basically a map version of the final data structure we want
+        let authorsTotal = d3.group(data, d => d.Author); 
 
         // turning the map into an array of dictionaries
         // form is: authorData = [{author: "name", books: [{Name: '', Author: '', User Rating: 00, Reviews: 00, Price: 0}, {}, ... ]}]
@@ -146,10 +144,6 @@
           //  .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-200))
           .force("center", d3.forceManyBody().strength(-3))
           .force("boundary", forceBoundary(0, 0, 750, 700))
-          //  .force('x', d3.forceX(600 / 2).strength(0.5))
-          //  .force('y',  d3.forceY(500 / 2).strength(0.8))
-          //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
-          //  .force("ypos", d3.forceY(bubbleHeight-20).strength(.1))
           .force("collision", d3.forceCollide().radius(d => radiusScale(d['books'].length) + 4))
           .on("tick", renderOnTick);
 
@@ -255,7 +249,6 @@
 
       function updatePanel(row) {
         let rowCopy = Object.assign({}, row);
-        // console.log(rowCopy)
         let author = rowCopy.author;
         authorName.text(author);
         delete rowCopy.author;
@@ -284,6 +277,10 @@
       updateData(data);
 
 
+      // ******** EXTERNAL FUNCTION START: makeSlider ********
+      // Credit to Prof. Jeff Rzeszotarski, taken from Lecture on Oct 31, 2022 (INFO 3300)
+      // https://github.com/jeffrz/info3300-fa2022/blob/main/homefinder/static/index.html
+      // Changes made to suit our data structures and necessary filtering
       function makeSlider(container, label, attribute, sliderWidth, sliderHeight) {
         let values = data.map(d => d[attribute]);
 
@@ -329,7 +326,7 @@
           area = d3.area().x(d => xScale(d.x1))
             .y0(yScale(0))
             .y1(10)
-            .curve(d3.curveNatural)
+            .curve(d3.curveNatural);
         }
 
         areaLayer.append("path").datum(counts)
@@ -362,6 +359,8 @@
         }
         canvas.append("g").attr("class", "brush").call(brush);
       }
+      // ******** EXTERNAL FUNCTION END: makeSlider ********
+
       let controls = d3.select("#controls");
       makeSlider(controls, "Book Price: ", "Price", 270, 30);
       makeSlider(controls, "Bestselling Year: ", "Year", 280, 30);
