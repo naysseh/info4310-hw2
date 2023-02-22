@@ -78,7 +78,7 @@
         return stillPassed;
 
       }
-
+      /// EXTERNAL FUNCTION BEGINS            from ----> https://stackoverflow.com/questions/24784302/wrapping-text-in-d3https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
       function wrap(text, width) {
         text.each(function () {
           var text = d3.select(this),
@@ -112,6 +112,7 @@
         });
 
       }
+      /// EXTERNAL FUNCTION ENDS   
 
       function updateData(data) {
         data = data.filter(d => pointPassesFilters(d));
@@ -139,9 +140,6 @@
           .range([5, 60]); //change this depending on how big we want the circles
 
         //create simulation for the author bubble plot 
-
-
-
 
         let simulation = d3.forceSimulation()
           .nodes(authorData)
@@ -256,7 +254,6 @@
 
 
       function updatePanel(row) {
-
         let rowCopy = Object.assign({}, row);
         // console.log(rowCopy)
         let author = rowCopy.author;
@@ -272,10 +269,7 @@
             });
         }
 
-
         let iterate = rowCopy["books"] != null ? rowCopy["books"] : [];
-
-        console.log(rowCopy);
         let rows = table.selectAll("tr").data(iterate)
           .join(enter => enter.append("tr"),
             update => update.selectAll("td").remove(),
@@ -285,7 +279,6 @@
         rows.append("td").text(d => d["Year"]);
         rows.append("td").text(d => d["Price"]);
         rows.append("td").text(d => d["User Rating"]);
-
       }
 
       updateData(data);
@@ -338,7 +331,6 @@
             .y1(10)
             .curve(d3.curveNatural)
         }
-
 
         areaLayer.append("path").datum(counts)
           .attr("class", "area")
