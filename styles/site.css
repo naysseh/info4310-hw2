@@ -1,5 +1,6 @@
 html {
   font-family: 'Trebuchet MS', sans-serif;
+  color: rgb(60, 58, 58);
 }
 
 .main-view {
@@ -81,24 +82,27 @@ th {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #dd6688;
-  margin-bottom: 20px;
+  background-color: #4E79A7;
+  height: 100px;
+  margin-bottom: 5px;
 }
 
-h3,
+/* h3,
 td,
 th {
   color: rgb(60, 58, 58);
-}
+} */
 
 h1 {
   display: flex;
   text-align: center;
+  font-size: 24px;
 
   color: white;
+  /* color: #4E79A7; */
 }
 
-/* .bubble-label * {
+/* .bubble-label {
   color: white;
 } */
 
@@ -125,10 +129,19 @@ h1 {
 
 .info {
   font-size: 14px;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .hidden {
   display: none;
+}
+
+.hl {
+  color: #1e60a7;
+  font-weight: bold;
+  text-decoration: underline;
+  /* color: white; */
 }
 
 /* #controls {

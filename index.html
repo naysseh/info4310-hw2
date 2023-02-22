@@ -11,18 +11,24 @@
 <body>
   <div>
     <div class="title">
-      <h1>Amazon Bestsellers At A Glance</h1>
+      <h1>Amazon Bestselling Authors: 2009 to 2019</h1>
     </div>
 
     <div class="main-view">
       <svg id="bubble" width="2000" height="700"></svg>
       <div class="right-side">
         <div class="info">
-          This visualization displays authors who have written books in the top 50 bestselling Amazon books for the
-          years 2009-2019. Bubble sizes are scaled to represent the number of bestselling books an author has written
-          that meet the specified criteria. <br><br>
-          Hover over the bubbles to view detailed information for each author. <br>
-          Select or drag an area within the sliders to adjust viewable data.
+          <div>
+            This visualization displays authors who have written books in the top 50 bestselling Amazon books for the
+            years 2009-2019. Bubble sizes are scaled to represent the number of bestselling books an author has written
+            that meet the specified criteria.<br><br>
+          </div>
+
+          <div>
+            <span class="hl">Hover</span> over the bubbles to view detailed information for each author. <br>
+            <span class="hl">Select</span> or <span class="hl">drag</span> an area within the sliders to adjust viewable
+            data.
+          </div>
 
         </div>
         <div id="controls">
@@ -159,7 +165,7 @@
             .attr("cx", 0)
             .attr("cy", 0) //start sim at bottom?
             .attr("r", d => radiusScale(d['books'].length))
-            .style("fill", "#4E79A7")
+            .style("fill", "#77B6B2")
             .attr("transform", d => `translate(${d.x},${d.y})`);
 
           let bubbleText = bubbleChartArea.selectAll("text.bubble-label")
@@ -169,6 +175,7 @@
             .style("text-anchor", "middle")
             .style("text-align", "center")
             .style("white-space", "normal")
+            .style("fill", "white")
             .attr("x", function (d) { return d.x })
             .attr("y", function (d) { return d.y - 14 })
             //  .attr("transform", d => `translate(${d.x},${d.y})`)
@@ -293,7 +300,7 @@
         let xAxis = d3.axisBottom(xScale).tickFormat(d3.format("~f"));
 
         let wrapper = container.append("div").attr("class", "control");
-        wrapper.append("div").text(label).style("font-size", "14px").style("margin-bottom", "5px");
+        wrapper.append("div").text(label).style("font-size", "14px").style("margin - bottom", "5px");
         let canvas = wrapper.append("svg").attr("width", sliderWidth)
           .attr("height", sliderHeight + 20)
           .attr("attribute", attribute);
