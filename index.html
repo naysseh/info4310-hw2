@@ -229,8 +229,14 @@
         });
 
         let authorName = d3.select("#panel").append("h3");
+        authorName.text("Author")
         let table = d3.select("#panel").append("table");
-
+        let header = table.selectAll("th")
+            .data(["Title", "Year", "Price", "Rating"])
+            .enter().append("th")
+            .text(function (d) {
+              return d;
+            });
 
 
         function updatePanel(row) {
@@ -240,14 +246,16 @@
           let author = rowCopy.author;
           authorName.text(author);
           delete rowCopy.author;
+          if (rowCopy["books"] == null  ){
+            authorName.text("Author");
+            header = table.selectAll("th")
+                      .data(["Title", "Year", "Price", "Rating"])
+                      .enter().append("th")
+                      .text(function (d) {
+                        return d;
+                      });
+          }
 
-          table.selectAll("th")
-            .data(["Title", "Year", "Price", "Rating"])
-            .enter().append("th")
-            .text(function (d) {
-              return d;
-            });
-          // .update().selectAll("th").remove();
 
           let iterate = rowCopy["books"] != null ? rowCopy["books"] : [];
 
