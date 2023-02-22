@@ -1,5 +1,3 @@
-<!-- version w the price slider. vv inefficient 0/10. also hover barely works. -->
-
 <!DOCTYPE html>
 <html>
 
@@ -15,13 +13,18 @@
     <div class="title">
       <h1>Amazon Bestsellers At A Glance</h1>
     </div>
-    <a href="index-orig.html">Project with Price Slider</a>
 
     <div class="main-view">
-      <svg id="bubble" width="600" height="500"></svg>
+      <svg id="bubble" width="2000" height="700"></svg>
       <div class="right-side">
-        <div class="filters">filters go around here? change this if it's wrong just putting a placeholder</div>
+        <div class="info">
+          This visualization displays authors who have written books in the top 50 bestselling Amazon books for the
+          years 2009-2019. Bubble sizes are scaled to represent the number of bestselling books an author has written
+          that meet the specified criteria. <br><br>
+          Hover over the bubbles to view detailed information for each author. <br>
+          Select or drag an area within the sliders to adjust viewable data.
 
+        </div>
         <div id="controls">
         </div>
         <div id="panel"></div>
@@ -127,7 +130,7 @@
         // docs on scale sqrt https://www.d3indepth.com/scales/
         let radiusScale = d3.scaleSqrt()
           .domain(authorExtent)
-          .range([5, 40]); //change this depending on how big we want the circles
+          .range([5, 60]); //change this depending on how big we want the circles
 
         //create simulation for the author bubble plot 
 
@@ -138,7 +141,7 @@
           .nodes(authorData)
           //  .force("center", d3.forceCenter(bubbleWidth/2.0, bubbleHeight-200))
           .force("center", d3.forceManyBody().strength(-3))
-          .force("boundary", forceBoundary(0, 0, 600, 480))
+          .force("boundary", forceBoundary(0, 0, 750, 700))
           //  .force('x', d3.forceX(600 / 2).strength(0.5))
           //  .force('y',  d3.forceY(500 / 2).strength(0.8))
           //  .force("xpos", d3.forceX(bubbleWidth/2).strength(0.1))
@@ -213,34 +216,52 @@
           d3.select(this)
             .style("opacity", 0.15)
             .transition().duration(200);
+
           updatePanel(d);
         });
         bubbles.on("mouseout", function (event, d) {
           d3.select(this)
             .transition().duration(200)
             .style("opacity", 0);
+          d3.selectAll("th")
+            .remove();
           updatePanel({});
         });
 
         let authorName = d3.select("#panel").append("h3");
         let table = d3.select("#panel").append("table");
 
+
+
         function updatePanel(row) {
+
           let rowCopy = Object.assign({}, row);
-          console.log(rowCopy)
+          // console.log(rowCopy)
           let author = rowCopy.author;
           authorName.text(author);
           delete rowCopy.author;
-          let iterate = rowCopy["books"] != null ? rowCopy["books"] : []
+
+          table.selectAll("th")
+            .data(["Title", "Year", "Price", "Rating"])
+            .enter().append("th")
+            .text(function (d) {
+              return d;
+            });
+          // .update().selectAll("th").remove();
+
+          let iterate = rowCopy["books"] != null ? rowCopy["books"] : [];
+
+          console.log(rowCopy);
           let rows = table.selectAll("tr").data(iterate)
             .join(enter => enter.append("tr"),
               update => update.selectAll("td").remove(),
               exit => exit.remove());
 
-          rows.append("td").append("strong").text(d => d["Name"]);
-          rows.append("td").text(d => "Placed in " + d["Year"]);
-          rows.append("td").text(d => "Price: $" + d["Price"]);
-          rows.append("td").text(d => "User Rating: " + d["User Rating"]);
+          rows.append("td").attr("class", "table-title").text(d => d["Name"]);
+          rows.append("td").text(d => d["Year"]);
+          rows.append("td").text(d => d["Price"]);
+          rows.append("td").text(d => d["User Rating"]);
+
         }
       }
       updateData(data);
@@ -255,7 +276,7 @@
         let xAxis = d3.axisBottom(xScale).tickFormat(d3.format("~f"));
 
         let wrapper = container.append("div").attr("class", "control");
-        wrapper.append("div").text(label);
+        wrapper.append("div").text(label).style("font-size", "14px").style("margin-bottom", "5px");
         let canvas = wrapper.append("svg").attr("width", sliderWidth)
           .attr("height", sliderHeight + 20)
           .attr("attribute", attribute);
@@ -325,8 +346,8 @@
         canvas.append("g").attr("class", "brush").call(brush);
       }
       let controls = d3.select("#controls");
-      makeSlider(controls, "Price: ", "Price", 280, 30);
-      makeSlider(controls, "Year: ", "Year", 280, 30);
+      makeSlider(controls, "Book Price: ", "Price", 270, 30);
+      makeSlider(controls, "Bestselling Year: ", "Year", 280, 30);
 
     }
     requestData();

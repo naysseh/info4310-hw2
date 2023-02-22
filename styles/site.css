@@ -5,19 +5,29 @@ html {
 .main-view {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  /* align-items: center; */
+  /* justify-items: center; */
+}
+
+#bubble {
+  border: 1px solid lightgray;
 }
 
 #panel {
-  width: 650px;
-  height: 500px;
-  margin-top: 20px;
-  padding: 100 100 100 100;
+  width: 550px;
+  height: 450px;
+  margin-left: 5px;
+  margin-top: 5px;
+  padding: 10px;
+  border: 1px solid lightgray;
 }
+
 #panel h3 {
-  margin:0;
+  margin: 0;
 }
-#panel th, td {
+
+#panel th,
+td {
   padding: 3px 3px;
   border-bottom: 1px solid #E1E1E1;
   text-align: left;
@@ -25,12 +35,28 @@ html {
 
 #panel th:first-child,
 #panel td:first-child {
-  padding-left: 0; 
+  padding-left: 0;
 }
 
 #panel th:last-child,
 #panel td:last-child {
-  padding-right: 0; 
+  padding-right: 0;
+}
+
+td {
+  font-size: 14px;
+}
+
+td {
+  width: 50px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.table-title {
+  width: 350px;
+  overflow-wrap: break-word;
+  padding-right: 15px;
 }
 
 .filters {
@@ -42,7 +68,7 @@ html {
 .right-side {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .title {
@@ -63,6 +89,38 @@ h1 {
 .bubble-label {
   font-family: 'Trebuchet MS', sans-serif;
 }
+
+#controls,
+.info {
+  width: 560px;
+  background-color: pink;
+  border: 1px solid lightgray;
+  margin-left: 5px;
+  /* height: 224px; */
+  padding: 10px;
+  height: 102px;
+  display: flex;
+  align-items: center;
+}
+
+#controls {
+  height: 76px;
+  margin-top: 5px;
+  justify-content: center;
+}
+
+.info {
+  font-size: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+/* #controls {
+  
+} */
+
 /* 
 text {
   display: flex;
