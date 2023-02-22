@@ -223,8 +223,6 @@
           d3.select(this)
             .transition().duration(200)
             .style("opacity", 0);
-          d3.selectAll("th")
-            .remove();
           updatePanel({});
         });
 
@@ -232,10 +230,19 @@
         authorName.text("Author")
         let table = d3.select("#panel").append("table");
         let header = table.selectAll("th")
-            .data(["Title", "Year", "Price", "Rating"])
-            .enter().append("th")
-            .text(function (d) {
-              return d;
+          .data(["Title", "Year", "Price", "Rating"])
+          .enter().append("th")
+          .text(function (d) {
+            return d;
+          })
+          .attr("class",
+            function (d) {
+              if (d == "Title") {
+                return "table-title table-title-h";
+              }
+              else {
+                return "";
+              }
             });
 
 
@@ -246,14 +253,14 @@
           let author = rowCopy.author;
           authorName.text(author);
           delete rowCopy.author;
-          if (rowCopy["books"] == null  ){
+          if (rowCopy["books"] == null) {
             authorName.text("Author");
             header = table.selectAll("th")
-                      .data(["Title", "Year", "Price", "Rating"])
-                      .enter().append("th")
-                      .text(function (d) {
-                        return d;
-                      });
+              .data(["Title", "Year", "Price", "Rating"])
+              .enter().append("th")
+              .text(function (d) {
+                return d;
+              });
           }
 
 
