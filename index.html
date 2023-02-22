@@ -159,7 +159,7 @@
             .attr("cx", 0)
             .attr("cy", 0) //start sim at bottom?
             .attr("r", d => radiusScale(d['books'].length))
-            .style("fill", "lightpink")
+            .style("fill", "#4E79A7")
             .attr("transform", d => `translate(${d.x},${d.y})`);
 
           let bubbleText = bubbleChartArea.selectAll("text.bubble-label")
@@ -226,59 +226,61 @@
           updatePanel({});
         });
 
-        let authorName = d3.select("#panel").append("h3");
-        authorName.text("Author")
-        let table = d3.select("#panel").append("table");
-        let header = table.selectAll("th")
-          .data(["Title", "Year", "Price", "Rating"])
-          .enter().append("th")
-          .text(function (d) {
-            return d;
-          })
-          .attr("class",
-            function (d) {
-              if (d == "Title") {
-                return "table-title table-title-h";
-              }
-              else {
-                return "";
-              }
-            });
-
-
-        function updatePanel(row) {
-
-          let rowCopy = Object.assign({}, row);
-          // console.log(rowCopy)
-          let author = rowCopy.author;
-          authorName.text(author);
-          delete rowCopy.author;
-          if (rowCopy["books"] == null) {
-            authorName.text("Author");
-            header = table.selectAll("th")
-              .data(["Title", "Year", "Price", "Rating"])
-              .enter().append("th")
-              .text(function (d) {
-                return d;
-              });
-          }
-
-
-          let iterate = rowCopy["books"] != null ? rowCopy["books"] : [];
-
-          console.log(rowCopy);
-          let rows = table.selectAll("tr").data(iterate)
-            .join(enter => enter.append("tr"),
-              update => update.selectAll("td").remove(),
-              exit => exit.remove());
-
-          rows.append("td").attr("class", "table-title").text(d => d["Name"]);
-          rows.append("td").text(d => d["Year"]);
-          rows.append("td").text(d => d["Price"]);
-          rows.append("td").text(d => d["User Rating"]);
-
-        }
       }
+
+      let authorName = d3.select("#panel").append("h3");
+      authorName.text("Author")
+      let table = d3.select("#panel").append("table");
+      let header = table.selectAll("th")
+        .data(["Title", "Year", "Price", "Rating"])
+        .enter().append("th")
+        .text(function (d) {
+          return d;
+        })
+        .attr("class",
+          function (d) {
+            if (d == "Title") {
+              return "table-title";
+            }
+            else {
+              return "";
+            }
+          });
+
+
+      function updatePanel(row) {
+
+        let rowCopy = Object.assign({}, row);
+        // console.log(rowCopy)
+        let author = rowCopy.author;
+        authorName.text(author);
+        delete rowCopy.author;
+        if (rowCopy["books"] == null) {
+          authorName.text("Author");
+          header = table.selectAll("th")
+            .data(["Title", "Year", "Price", "Rating"])
+            .enter().append("th")
+            .text(function (d) {
+              return d;
+            });
+        }
+
+
+        let iterate = rowCopy["books"] != null ? rowCopy["books"] : [];
+
+        console.log(rowCopy);
+        let rows = table.selectAll("tr").data(iterate)
+          .join(enter => enter.append("tr"),
+            update => update.selectAll("td").remove(),
+            exit => exit.remove());
+
+        rows.append("td").attr("class", "table-title").text(d => d["Name"]);
+        rows.append("td").text(d => d["Year"]);
+        rows.append("td").text(d => d["Price"]);
+        rows.append("td").text(d => d["User Rating"]);
+
+      }
+
       updateData(data);
 
 
@@ -327,13 +329,14 @@
           area = d3.area().x(d => xScale(d.x1))
             .y0(yScale(0))
             .y1(10)
-            .curve(d3.curveNatural);
+            .curve(d3.curveNatural)
         }
 
 
         areaLayer.append("path").datum(counts)
           .attr("class", "area")
-          .attr("d", area);
+          .attr("d", area)
+          .style("fill", "#4E79A7");
 
         let filterFunc = d => true;
         filters[attribute] = filterFunc;

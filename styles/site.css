@@ -85,6 +85,12 @@ th {
   margin-bottom: 20px;
 }
 
+h3,
+td,
+th {
+  color: rgb(60, 58, 58);
+}
+
 h1 {
   display: flex;
   text-align: center;
@@ -92,14 +98,14 @@ h1 {
   color: white;
 }
 
-.bubble-label {
-  font-family: 'Trebuchet MS', sans-serif;
-}
+/* .bubble-label * {
+  color: white;
+} */
 
 #controls,
 .info {
   width: 560px;
-  background-color: pink;
+  background-color: lightgray;
   border: 1px solid lightgray;
   margin-left: 5px;
   /* height: 224px; */
@@ -113,7 +119,9 @@ h1 {
   height: 76px;
   margin-top: 5px;
   justify-content: center;
+  background-color: white;
 }
+
 
 .info {
   font-size: 14px;
