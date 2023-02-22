@@ -53,30 +53,10 @@
       const data = await d3.csv("data/bestsellers.csv", d3.autoType);
       console.log(data);
 
-      var filters = {};
-
-      function pointPassesFilters(point) {
-
-        // Start out with true so we can use && to 
-        let stillPassed = true;
-
-        // Loop through the filters and check if it passes each
-        // Objects.values(filters) in this case is the list of filter functions
-
-        Object.values(filters).forEach(filterFunc => {
-
-          stillPassed = filterFunc(point) && stillPassed;
-          // Might want to short-circuit the loop if it fails and you have lots of filters
-
-        });
-
-        return stillPassed;
-
-      }
-
       // ******** EXTERNAL FUNCTION BEGINS ********
       // Credit to @mdmdl on StackOverflow
       // https://stackoverflow.com/questions/24784302/wrapping-text-in-d3https://stackoverflow.com/questions/24784302/wrapping-text-in-d3
+
       function wrap(text, width) {
         text.each(function () {
           var text = d3.select(this),
@@ -111,6 +91,102 @@
 
       }
       // ******** EXTERNAL FUNCTION ENDS ******** 
+
+      // ******** EXTERNAL FUNCTION START: makeSlider, pointPassesFilters ********
+      // Credit to Prof. Jeff Rzeszotarski, taken from Lecture on Oct 31, 2022 (INFO 3300)
+      // https://github.com/jeffrz/info3300-fa2022/blob/main/homefinder/static/index.html
+      // Changes made to suit our data structures and necessary filtering
+      var filters = {};
+
+      function pointPassesFilters(point) {
+        let stillPassed = true;
+        Object.values(filters).forEach(filterFunc => {
+          stillPassed = filterFunc(point) && stillPassed;
+        });
+        return stillPassed;
+      }
+
+      function makeSlider(container, label, attribute, sliderWidth, sliderHeight) {
+        let values = data.map(d => d[attribute]);
+
+        let minMax = d3.extent(values);
+        let xScale = d3.scaleLinear().domain(minMax)
+          .range([10, sliderWidth - 10]);
+        let xAxis = d3.axisBottom(xScale).tickFormat(d3.format("~f"));
+
+        let wrapper = container.append("div").attr("class", "control");
+        wrapper.append("div").text(label).style("font-size", "14px").style("margin - bottom", "5px");
+        let canvas = wrapper.append("svg").attr("width", sliderWidth)
+          .attr("height", sliderHeight + 20)
+          .attr("attribute", attribute);
+        let areaLayer = canvas.append("g");
+        canvas.append("g").attr("transform", `translate(0,${sliderHeight})`)
+          .call(xAxis);
+
+        let numBins = 10;
+
+        let histoGen = d3.histogram().domain(minMax)
+          .thresholds(numBins);
+        let counts = histoGen(values);
+        console.log(counts);
+
+        counts.unshift({
+          x0: 0,
+          x1: counts[0].x0,
+          length: counts[0].length
+        });
+
+        let yScale = d3.scaleLinear().domain(d3.extent(counts, d => d.length))
+          .range([sliderHeight, 4]);
+
+        let area = d3.area().x(d => xScale(d.x1))
+          .y0(yScale(0))
+          .y1(d => yScale(d.length))
+          .curve(d3.curveNatural);
+
+        if (attribute == "Year") {
+          yScale = d3.scaleLinear().domain([0, 20])
+            .range([sliderHeight, 4]);
+
+          area = d3.area().x(d => xScale(d.x1))
+            .y0(yScale(0))
+            .y1(10)
+            .curve(d3.curveNatural);
+        }
+
+        areaLayer.append("path").datum(counts)
+          .attr("class", "area")
+          .attr("d", area)
+          .style("fill", "#4E79A7");
+
+        let filterFunc = d => true;
+        filters[attribute] = filterFunc;
+
+        var brush = d3.brushX().extent([[10, 0], [sliderWidth - 10, sliderHeight]])
+          .on("end", brushMoved);
+
+        function brushMoved(event) {
+          if (event.selection !== null) {
+
+            let start = xScale.invert(event.selection[0]);
+            let end = xScale.invert(event.selection[1]);
+
+            let filterFunc = d => d[attribute] >= start && d[attribute] <= end;
+            filters[attribute] = filterFunc;
+            console.log(filters);
+
+            updateData(data);
+          }
+          else {
+            let filterFunc = d => true;
+            filters[attribute] = filterFunc;
+            updateData(data);
+          }
+        }
+        canvas.append("g").attr("class", "brush").call(brush);
+      }
+      // ******** EXTERNAL FUNCTION END: makeSlider, pointPassesFilters ********
+
 
       function updateData(data) {
         data = data.filter(d => pointPassesFilters(d));
@@ -276,90 +352,6 @@
 
       updateData(data);
 
-
-      // ******** EXTERNAL FUNCTION START: makeSlider ********
-      // Credit to Prof. Jeff Rzeszotarski, taken from Lecture on Oct 31, 2022 (INFO 3300)
-      // https://github.com/jeffrz/info3300-fa2022/blob/main/homefinder/static/index.html
-      // Changes made to suit our data structures and necessary filtering
-      function makeSlider(container, label, attribute, sliderWidth, sliderHeight) {
-        let values = data.map(d => d[attribute]);
-
-        let minMax = d3.extent(values);
-        let xScale = d3.scaleLinear().domain(minMax)
-          .range([10, sliderWidth - 10]);
-        let xAxis = d3.axisBottom(xScale).tickFormat(d3.format("~f"));
-
-        let wrapper = container.append("div").attr("class", "control");
-        wrapper.append("div").text(label).style("font-size", "14px").style("margin - bottom", "5px");
-        let canvas = wrapper.append("svg").attr("width", sliderWidth)
-          .attr("height", sliderHeight + 20)
-          .attr("attribute", attribute);
-        let areaLayer = canvas.append("g");
-        canvas.append("g").attr("transform", `translate(0,${sliderHeight})`)
-          .call(xAxis);
-
-        let numBins = 10;
-
-        let histoGen = d3.histogram().domain(minMax)
-          .thresholds(numBins);
-        let counts = histoGen(values);
-        console.log(counts);
-
-        counts.unshift({
-          x0: 0,
-          x1: counts[0].x0,
-          length: counts[0].length
-        });
-
-        let yScale = d3.scaleLinear().domain(d3.extent(counts, d => d.length))
-          .range([sliderHeight, 4]);
-
-        let area = d3.area().x(d => xScale(d.x1))
-          .y0(yScale(0))
-          .y1(d => yScale(d.length))
-          .curve(d3.curveNatural);
-
-        if (attribute == "Year") {
-          yScale = d3.scaleLinear().domain([0, 20])
-            .range([sliderHeight, 4]);
-
-          area = d3.area().x(d => xScale(d.x1))
-            .y0(yScale(0))
-            .y1(10)
-            .curve(d3.curveNatural);
-        }
-
-        areaLayer.append("path").datum(counts)
-          .attr("class", "area")
-          .attr("d", area)
-          .style("fill", "#4E79A7");
-
-        let filterFunc = d => true;
-        filters[attribute] = filterFunc;
-
-        var brush = d3.brushX().extent([[10, 0], [sliderWidth - 10, sliderHeight]])
-          .on("end", brushMoved);
-
-        function brushMoved(event) {
-          if (event.selection !== null) {
-
-            let start = xScale.invert(event.selection[0]);
-            let end = xScale.invert(event.selection[1]);
-
-            let filterFunc = d => d[attribute] >= start && d[attribute] <= end;
-            filters[attribute] = filterFunc;
-
-            updateData(data);
-          }
-          else {
-            let filterFunc = d => true;
-            filters[attribute] = filterFunc;
-            updateData(data);
-          }
-        }
-        canvas.append("g").attr("class", "brush").call(brush);
-      }
-      // ******** EXTERNAL FUNCTION END: makeSlider ********
 
       let controls = d3.select("#controls");
       makeSlider(controls, "Book Price: ", "Price", 270, 30);
