@@ -231,7 +231,7 @@
             .join("circle")
             .attr("class", "bubble bubbles")
             .attr("cx", 0)
-            .attr("cy", 0) //start sim at bottom?
+            .attr("cy", 0) 
             .attr("r", d => radiusScale(d['books'].length))
             .style("fill", "#77B6B2")
             .attr("transform", d => `translate(${d.x},${d.y})`);
@@ -245,27 +245,24 @@
             .style("white-space", "normal")
             .style("fill", "white")
             .attr("x", function (d) { return d.x })
-            .attr("y", function (d) { return d.y -10 })
-            //  .attr("transform", d => `translate(${d.x},${d.y})`)
+            .attr("y", function (d) { return d.y - 12 })
             .style("font-size", "10px")
             .text(function (d) {
+              var author_split = d.author.split(" ")
+              var last_name = author_split[author_split.length - 1]
               if (radiusScale(d['books'].length) > 25) {
                 return d.author;
               } else if (radiusScale(d['books'].length) > 18) {
-                var author_split = d.author.split(" ")
-                var last_name = author_split[author_split.length - 1]
-                if (last_name.length > 8 || last_name == "Gladwell" || last_name == "Campbell" || last_name == "Stockett")
+                if (last_name.length > 8 || last_name == "Gladwell" || last_name == "Campbell" || last_name == "Stockett" || last_name == "Drummond")
                   return ""
                 else
-                  return author_split[author_split.length - 1]
+                  return last_name
               }
               else if (radiusScale(d['books'].length) > 12) {
-                var author_split = d.author.split(" ")
-                var last_name = author_split[author_split.length - 1]
-                if (last_name.length >= 5)
+                if (last_name.length >= 5 || last_name.length < 4)
                   return ""
                 else
-                  return author_split[author_split.length - 1]
+                  return last_name
               }
               else { return "" }
             })
@@ -276,7 +273,7 @@
             .join("circle")
             .attr("class", "zero-bubble")
             .attr("cx", 0)
-            .attr("cy", 0) //start sim at bottom?
+            .attr("cy", 0)
             .attr("r", d => radiusScale(d['books'].length))
             .style("opacity", 0)
             .attr("transform", d => `translate(${d.x},${d.y})`)
