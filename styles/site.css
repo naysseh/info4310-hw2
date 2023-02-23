@@ -6,8 +6,6 @@ html {
 .main-view {
   display: flex;
   flex-direction: row;
-  /* align-items: center; */
-  /* justify-items: center; */
 }
 
 #bubble {
@@ -61,11 +59,6 @@ th {
   margin-right: 15px;
 }
 
-
-/* .table-title-h {
-  margin-right: 10px;
-} */
-
 .filters {
   background-color: #eeaabb;
   width: 500px;
@@ -75,7 +68,6 @@ th {
 .right-side {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
 }
 
 .title {
@@ -97,7 +89,6 @@ h1 {
   display: flex;
   text-align: center;
   font-size: 24px;
-
   color: white;
   /* color: #4E79A7; */
 }
@@ -114,7 +105,7 @@ h1 {
   margin-left: 5px;
   /* height: 224px; */
   padding: 10px;
-  height: 102px;
+  height: 113px;
   display: flex;
   align-items: center;
 }
@@ -143,13 +134,3 @@ h1 {
   /* text-decoration: underline; */
   /* color: white; */
 }
-
-/* #controls {
-  
-} */
-
-/* 
-text {
-  display: flex;
-  
-} */
