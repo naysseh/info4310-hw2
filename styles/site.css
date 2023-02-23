@@ -140,7 +140,7 @@ h1 {
 .hl {
   color: #1e60a7;
   font-weight: bold;
-  text-decoration: underline;
+  /* text-decoration: underline; */
   /* color: white; */
 }
 
